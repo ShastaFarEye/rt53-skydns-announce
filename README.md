@@ -1,5 +1,14 @@
 Generic SkyDNS Service Announcement Dockerfile for CoreOS
 =======================================================
+Modified to allow for container names in the format %p_%i
+Modified to construct host.zone.domain in the format
+%p.%i.domain
+
+
+
+
+Readme from Joukou
+=======================================================
 [![Build Status](https://circleci.com/gh/joukou/joukou-docker-skydns-announce/tree/develop.png?circle-token=16be0e437c7d185603a33a2fd2b01bbd153351b1)](https://circleci.com/gh/joukou/joukou-docker-skydns-announce/tree/develop) [![Docker Repository on Quay.io](https://quay.io/repository/joukou/skydns-announce/status "Docker Repository on Quay.io")](https://quay.io/repository/joukou/skydns-announce) [![Apache 2.0](http://img.shields.io/badge/License-apache%202.0-brightgreen.svg)](#license) [![Stories in Ready](https://badge.waffle.io/joukou/joukou-docker-skydns-announce.png?label=ready&title=Ready)](https://waffle.io/joukou/joukou-docker-skydns-announce) [![IRC](http://img.shields.io/badge/IRC-%23joukou-blue.svg)](irc://irc.freenode.org:6667/#joukou)
 
 ## Usage
