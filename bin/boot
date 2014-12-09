@@ -40,8 +40,9 @@ export ETCD_ADDR=${ETCD_ADDR:-${DOCKER_BRIDGE_IP}:${ETCD_PORT}}
 export ETCD_TTL=${ETCD_TTL:-10}
 
 # configure SkyDNS
+export SKYZONE=$(echo ${SKYDNS_ZONE}|awk -F"_" '{print $2}')
 export SKYDNS_DOMAIN_PATH=${SKYDNS_DOMAIN_PATH:-mazaclub}
-export SKYDNS_ZONE=${SKYDNS_ZONE:-all}
+export SKYDNS_ZONE=${SKYDNS_ZONE:-${SKYZONE}}
 export SKYDNS_ENVIRONMENT=${SKYDNS_ENVIRONMENT:-production}
 
 if [[ -n $SKYDNS_IFACE ]]
@@ -55,7 +56,7 @@ then
 elif [[ -n $SKYDNS_CONTAINER ]]
 then
   export SKYDNS_IP="$(get_container_v4_addr $SKYDNS_CONTAINER)"
-  export SKYDNS_NAME=$SKYDNS_CONTAINER
+  export SKYDNS_NAME=$(echo $SKYDNS_CONTAINER|awk -F"_" '{print $1}')
 else
   echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [ERROR] \$SKYDNS_IFACE OR \$SKYDNS_CONTAINER must be set!"
   exit 1
