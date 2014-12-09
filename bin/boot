@@ -40,7 +40,7 @@ export ETCD_ADDR=${ETCD_ADDR:-${DOCKER_BRIDGE_IP}:${ETCD_PORT}}
 export ETCD_TTL=${ETCD_TTL:-10}
 
 # configure SkyDNS
-export SKYDNS_DOMAIN_PATH=${SKYDNS_DOMAIN_PATH:-local/joukou}
+export SKYDNS_DOMAIN_PATH=${SKYDNS_DOMAIN_PATH:-skydns/mazaclub}
 export SKYDNS_ZONE=${SKYDNS_ZONE:-all}
 export SKYDNS_ENVIRONMENT=${SKYDNS_ENVIRONMENT:-production}
 
@@ -60,11 +60,12 @@ else
   echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [ERROR] \$SKYDNS_IFACE OR \$SKYDNS_CONTAINER must be set!"
   exit 1
 fi
-
-if [[ ! -n $SKYDNS_INSTANCE ]]; then
-  echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [ERROR] \$SKYDNS_INSTANCE number must be set; i.e. pass-through %i from systemd!"
-  exit 1
-fi
+# We use global skydns via fleet
+# maybe joukou's is better, but 
+#if [[ ! -n $SKYDNS_INSTANCE ]]; then
+#  echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [ERROR] \$SKYDNS_INSTANCE number must be set; i.e. pass-through %i from systemd!"
+#  exit 1
+#fi
 
 if [[ ! -n $SKYDNS_PORT ]]; then
   echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [ERROR] \$SKYDNS_PORT must be set!"
@@ -73,7 +74,8 @@ fi
 
 export SKYDNS_PROTO=${SKYDNS_PROTO:-tcp}
 
-export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_ENVIRONMENT}/${SKYDNS_NAME}/${SKYDNS_INSTANCE}"
+#export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_ENVIRONMENT}/${SKYDNS_NAME}/${SKYDNS_INSTANCE}"
+export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_NAME}"
 
 # smart shutdown on SIGINT and SIGTERM
 function on_exit() {
