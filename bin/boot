@@ -40,7 +40,7 @@ export ETCD_ADDR=${ETCD_ADDR:-${DOCKER_BRIDGE_IP}:${ETCD_PORT}}
 export ETCD_TTL=${ETCD_TTL:-10}
 
 # configure SkyDNS
-export SKYZONE=$(echo ${SKYDNS_ZONE}|awk -F"_" '{print $2}')
+export SKYZONE=$(echo ${SKYDNS_CONTAINER}|awk -F"_" '{print $2}')
 export SKYDNS_DOMAIN_PATH=${SKYDNS_DOMAIN_PATH:-mazaclub}
 export SKYDNS_ZONE=${SKYDNS_ZONE:-${SKYZONE}}
 export SKYDNS_ENVIRONMENT=${SKYDNS_ENVIRONMENT:-production}
