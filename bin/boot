@@ -76,9 +76,11 @@ fi
 export SKYDNS_PROTO=${SKYDNS_PROTO:-tcp}
 
 #export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_ENVIRONMENT}/${SKYDNS_NAME}/${SKYDNS_INSTANCE}"
-if [ -z ${SKYDNS_ZONE} ] ; then
+if [ ! -n ${SKYDNS_ZONE} ] ; then
+     echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] \$SKYDNS_ZONE not set, using ${SKYDNS_NAME}.${SKYDNS_DOMAIN_PATH}!"
      export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_NAME}"
-else export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_NAME}"
+else echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] \$SKYDNS_ZONE set to ${SKYDNS_ZONE}"
+     export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_NAME}"
 fi
 # smart shutdown on SIGINT and SIGTERM
 function on_exit() {
