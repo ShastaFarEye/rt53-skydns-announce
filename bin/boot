@@ -48,6 +48,7 @@ export SKYDNS_ENVIRONMENT=${SKYDNS_ENVIRONMENT:-production}
 if [[ -n $SKYDNS_IFACE ]]
 then
   export SKYDNS_IP="$(get_iface_v4_addr $SKYDNS_IFACE)"
+  export byip=true
   if [[ ! -n $SKYDNS_NAME ]]
   then
     echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [ERROR] \$SKYDNS_NAME must be set when using \$SKYDNS_IFACE!"
@@ -104,10 +105,15 @@ sleep $(($ETCD_TTL+1))
 echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Announcing ${SKYDNS_PATH}..."
 echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Host: ${SKYDNS_IP}"
 echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Port: ${SKYDNS_PORT}"
-
-while etcdctl --no-sync -C $ETCD_ADDR set --ttl $ETCD_TTL $SKYDNS_PATH "{\"host\":\"${SKYDNS_IP}\",\"port\": ${SKYDNS_PORT}}" 2>&1; do
-  sleep $(($ETCD_TTL)) # sleep for half the etcd TTL
-done
-
+if [ "$byip" = "true" ] ; then
+   echo "Using ${SKYDNS_IP} by IP"
+   while etcdctl --no-sync -C $ETCD_ADDR set --ttl $ETCD_TTL $SKYDNS_PATH "{\"host\": \"${SKYDNS_IP}\",\"port\": ${SKYDNS_PORT}}" 2>&1; do
+      sleep $(($ETCD_TTL)) # sleep for half the etcd TTL
+   done
+else echo "Using ${SKYDNS_IP} via container_name"
+   while etcdctl --no-sync -C $ETCD_ADDR set --ttl $ETCD_TTL $SKYDNS_PATH "{\"host\": ${SKYDNS_IP},\"port\": ${SKYDNS_PORT}}" 2>&1; do
+     sleep $(($ETCD_TTL)) # sleep for half the etcd TTL
+   done
+fi
 # if the loop quits, something went wrong
 exit 1
