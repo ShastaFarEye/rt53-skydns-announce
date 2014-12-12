@@ -76,8 +76,10 @@ fi
 export SKYDNS_PROTO=${SKYDNS_PROTO:-tcp}
 
 #export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_ENVIRONMENT}/${SKYDNS_NAME}/${SKYDNS_INSTANCE}"
-export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_NAME}"
-
+if [ -z ${SKYDNS_ZONE} ] ; then
+     export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_NAME}"
+else export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_NAME}"
+fi
 # smart shutdown on SIGINT and SIGTERM
 function on_exit() {
   echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Removing ${SKYDNS_PATH}..."
