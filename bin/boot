@@ -68,10 +68,6 @@ else
 fi
 # We use global skydns via fleet
 # maybe joukou's is better, but 
-#if [[ ! -n $SKYDNS_INSTANCE ]]; then
-#  echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [ERROR] \$SKYDNS_INSTANCE number must be set; i.e. pass-through %i from systemd!"
-#  exit 1
-#fi
 
 if [[ ! -n $SKYDNS_PORT ]]; then
   echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [ERROR] \$SKYDNS_PORT must be set!"
@@ -81,11 +77,18 @@ fi
 export SKYDNS_PROTO=${SKYDNS_PROTO:-tcp}
 
 #export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_ENVIRONMENT}/${SKYDNS_NAME}/${SKYDNS_INSTANCE}"
-if [ "${SKYDNS_ZONE}X" = "X"  ] ; then
+if [[ ! -z $SKYDNS_INSTANCE ]]; then
+    echo "(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Nameserver Instance"
+#  echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [ERROR] \$SKYDNS_INSTANCE number must be set; i.e. pass-through %i from systemd!"
+#  exit 1
+     export NSRR=true
+     export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_NAME}/${SKYDNS_INSTANCE}"
+elif [ "${SKYDNS_ZONE}X" = "X"  ] ; then
      echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] \$SKYDNS_ZONE not set, using ${SKYDNS_NAME}.${SKYDNS_DOMAIN_PATH}!"
      export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_NAME}"
 else echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] \$SKYDNS_ZONE set to ${SKYDNS_ZONE}"
      export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_NAME}"
+
 fi
 # smart shutdown on SIGINT and SIGTERM
 function on_exit() {
@@ -111,6 +114,7 @@ echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Host: ${SKYDNS_IP}"
 echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Port: ${SKYDNS_PORT}"
 if [ "$byip" = "true" ] ; then
    echo "Using ${SKYDNS_IP} by IP"
+   
    while etcdctl --no-sync -C $ETCD_ADDR set --ttl $ETCD_TTL $SKYDNS_PATH "{\"host\": \"${SKYDNS_IP}\",\"port\": ${SKYDNS_PORT}}" 2>&1; do
       #since one of our primary uses for this is HA services on host.domain names, randomize this a little
       xtra=$(echo $[ RANDOM % 10 ])
