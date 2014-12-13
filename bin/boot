@@ -114,11 +114,11 @@ if [ "$byip" = "true" ] ; then
    while etcdctl --no-sync -C $ETCD_ADDR set --ttl $ETCD_TTL $SKYDNS_PATH "{\"host\": \"${SKYDNS_IP}\",\"port\": ${SKYDNS_PORT}}" 2>&1; do
       #since one of our primary uses for this is HA services on host.domain names, randomize this a little
       xtra=$(echo $[ RANDOM % 10 ])
-      sleep $(($ETCD_TTL+$xtra)) # sleep etcd ttl + a little
+      sleep $(($ETCD_TTL-$xtra)) # sleep etcd ttl - a little
    done
 else echo "Using ${SKYDNS_IP} via container_name"
    while etcdctl --no-sync -C $ETCD_ADDR set --ttl $ETCD_TTL $SKYDNS_PATH "{\"host\": ${SKYDNS_IP},\"port\": ${SKYDNS_PORT}}" 2>&1; do
-     sleep $(($ETCD_TTL)) # sleep for half the etcd TTL
+     sleep $(($ETCD_TTL/2)) # sleep for half the etcd TTL
    done
 fi
 # if the loop quits, something went wrong
