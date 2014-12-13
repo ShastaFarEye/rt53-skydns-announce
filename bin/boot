@@ -58,6 +58,10 @@ elif [[ -n $SKYDNS_CONTAINER ]]
 then
   export SKYDNS_IP=$(get_container_v4_addr $SKYDNS_CONTAINER)
   export SKYDNS_NAME=$(echo $SKYDNS_CONTAINER|awk -F"_" '{print $1}')
+  if [ "${SKYDNS_NAME}" = "skydns" ] ; then
+     export SKYDNS_NAME=ns
+     export SKYDNS_ZONE=dns
+  fi
 else
   echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [ERROR] \$SKYDNS_IFACE OR \$SKYDNS_CONTAINER must be set!"
   exit 1
