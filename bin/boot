@@ -77,18 +77,19 @@ fi
 export SKYDNS_PROTO=${SKYDNS_PROTO:-tcp}
 
 #export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_ENVIRONMENT}/${SKYDNS_NAME}/${SKYDNS_INSTANCE}"
-if [[ ! -z $SKYDNS_INSTANCE ]]; then
-    echo "(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Nameserver Instance"
-#  echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [ERROR] \$SKYDNS_INSTANCE number must be set; i.e. pass-through %i from systemd!"
-#  exit 1
-     export NSRR=true
-     export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_NAME}/${SKYDNS_INSTANCE}"
-elif [ "${SKYDNS_ZONE}X" = "X"  ] ; then
+
+if [ "${SKYDNS_ZONE}X" = "X"  ] ; then
      echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] \$SKYDNS_ZONE not set, using ${SKYDNS_NAME}.${SKYDNS_DOMAIN_PATH}!"
      export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_NAME}"
 else echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] \$SKYDNS_ZONE set to ${SKYDNS_ZONE}"
      export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_NAME}"
-
+fi
+if [[ ! -z $SKYDNS_INSTANCE ]]; then
+    echo "(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] RoundRobin Instance"
+#  echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [ERROR] \$SKYDNS_INSTANCE number must be set; i.e. pass-through %i from systemd!"
+#  exit 1
+     export RR=true
+     export SKYDNS_PATH="${SKYDNS_PATH}/${SKYDNS_INSTANCE}"
 fi
 # smart shutdown on SIGINT and SIGTERM
 function on_exit() {
