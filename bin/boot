@@ -84,8 +84,8 @@ if [ "${SKYDNS_ZONE}X" = "X"  ] ; then
 else echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] \$SKYDNS_ZONE set to ${SKYDNS_ZONE}"
      export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_NAME}"
 fi
-if [[ ! -z $SKYDNS_INSTANCE ]]; then
-    echo "(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] RoundRobin Instance"
+if [[ "${SKYDNS_INSTANCE}X" != "X" ]]; then
+    echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] RoundRobin Instance"
 #  echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [ERROR] \$SKYDNS_INSTANCE number must be set; i.e. pass-through %i from systemd!"
 #  exit 1
      export RR=true
