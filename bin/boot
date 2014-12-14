@@ -37,7 +37,7 @@ function get_container_v4_addr {
 # configure etcd
 export ETCD_PORT=${ETCD_PORT:-4001}
 export ETCD_ADDR=${ETCD_ADDR:-${DOCKER_BRIDGE_IP}:${ETCD_PORT}}
-export ETCD_TTL=${ETCD_TTL:-10}
+export ETCD_TTL=${ETCD_TTL:-30}
 
 # configure SkyDNS
 export SKYZONE=$(echo ${SKYDNS_CONTAINER}|awk -F"_" '{print $2}')
@@ -119,7 +119,7 @@ if [ "$byip" = "true" ] ; then
    while etcdctl --no-sync -C $ETCD_ADDR set --ttl $ETCD_TTL $SKYDNS_PATH "{\"host\": \"${SKYDNS_IP}\",\"port\": ${SKYDNS_PORT}}" 2>&1; do
       #since one of our primary uses for this is HA services on host.domain names, randomize this a little
       xtra=$(echo $[ RANDOM % 10 ])
-      sleep $(($ETCD_TTL-$xtra)) # sleep etcd ttl - a little
+      sleep $(($ETCD_TTL/2)) # sleep etcd ttl - a little
    done
 else echo "Using ${SKYDNS_IP} via container_name"
    while etcdctl --no-sync -C $ETCD_ADDR set --ttl $ETCD_TTL $SKYDNS_PATH "{\"host\": ${SKYDNS_IP},\"port\": ${SKYDNS_PORT}}" 2>&1; do
