@@ -61,6 +61,7 @@ then
   if [ "${SKYDNS_NAME}" = "skydns" ] ; then
      export SKYDNS_NAME=ns
      export SKYDNS_ZONE=dns
+     export ETCD_TTL=10
   fi
 else
   echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [ERROR] \$SKYDNS_IFACE OR \$SKYDNS_CONTAINER must be set!"
