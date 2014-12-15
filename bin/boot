@@ -49,6 +49,7 @@ if [ "${instance}" != ""  ]
 then
   #were getting the instance id from the second part of the service instance %i
   export SKYDNS_INSTANCE="${instance}"
+  export SKYDNS_ZONE=$(echo "${SKYDNS_ZONE}"|awk -F"." '{print $1}')
 fi
 if [[ -n $SKYDNS_IFACE ]]
 then
