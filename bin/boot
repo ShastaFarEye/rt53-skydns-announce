@@ -44,7 +44,12 @@ export SKYZONE=$(echo ${SKYDNS_CONTAINER}|awk -F"_" '{print $2}')
 export SKYDNS_DOMAIN_PATH=${SKYDNS_DOMAIN_PATH:-mazaclub}
 export SKYDNS_ZONE=${SKYDNS_ZONE:-${SKYZONE}}
 export SKYDNS_ENVIRONMENT=${SKYDNS_ENVIRONMENT:-production}
-
+instance=$(echo ${SKYDNS_ZONE}|awk -F"." '{print $NF}')
+if [ "${instance}" != ""  ]
+then
+  #were getting the instance id from the second part of the service instance %i
+  export SKYDNS_INSTANCE="${instance}"
+fi
 if [[ -n $SKYDNS_IFACE ]]
 then
   export SKYDNS_IP="$(get_iface_v4_addr $SKYDNS_IFACE)"
