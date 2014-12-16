@@ -40,16 +40,16 @@ export ETCD_ADDR=${ETCD_ADDR:-${DOCKER_BRIDGE_IP}:${ETCD_PORT}}
 export ETCD_TTL=${ETCD_TTL:-30}
 
 # configure SkyDNS
-export SKYZONE=$(echo ${SKYDNS_CONTAINER}|awk -F"_" '{print $2}')
+export SKYZONE=$(echo ${SKYDNS_CONTAINER}|awk -F"." '{print $2}')
 export SKYDNS_DOMAIN_PATH=${SKYDNS_DOMAIN_PATH:-mazaclub}
 export SKYDNS_ZONE=${SKYDNS_ZONE:-${SKYZONE}}
 export SKYDNS_ENVIRONMENT=${SKYDNS_ENVIRONMENT:-production}
-instance=$(echo ${SKYDNS_ZONE}|awk -F"." '{print $NF}')
+instance=$(echo ${SKYDNS_ZONE}|awk -F"." '{print $(NF-1)}')
 if [ "${instance}" != ""  ]
 then
   #were getting the instance id from the fir part of the service instance %i
   export SKYDNS_INSTANCE="${instance}"
-  export SKYDNS_ZONE=$(echo "${SKYDNS_ZONE}"|awk -F"." '{print $1}')
+  export SKYDNS_ZONE=$(echo "${SKYDNS_ZONE}"|awk -F"." '{print $2}')
 fi
 if [[ -n $SKYDNS_IFACE ]]
 then
