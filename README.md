@@ -1,9 +1,11 @@
 Generic SkyDNS Service Announcement Dockerfile for CoreOS
 =======================================================
-Modified to allow for container names in the format %p_%i
-Modified to construct host.zone.domain in the format
-%p.%i.domain
+Modified to take instance names in the form of 
+layer@app.instance.service
 
+and create A records in the form of
+
+instance.layer.app.domain
 
 
 
