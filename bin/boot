@@ -90,7 +90,10 @@ fi
 export SKYDNS_PROTO=${SKYDNS_PROTO:-tcp}
 
 #export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_ZONE}/${SKYDNS_ENVIRONMENT}/${SKYDNS_NAME}/${SKYDNS_INSTANCE}"
-
+if [ "${SKYDNS_ZONE}" = "none" ]
+then
+     export SKYDNS_ZONE=""
+fi
 if [ "${SKYDNS_ZONE}X" = "X"  ] ; then
      echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] \$SKYDNS_ZONE not set, using ${SKYDNS_NAME}.${SKYDNS_DOMAIN_PATH}!"
      export SKYDNS_PATH="/skydns/${SKYDNS_DOMAIN_PATH}/${SKYDNS_NAME}"
