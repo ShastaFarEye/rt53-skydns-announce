@@ -132,7 +132,7 @@ echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Port: ${SKYDNS_PORT}"
 if [ "$byip" = "true" ] ; then
    echo "Using ${SKYDNS_IP} by IP"
    
-   while etcdctl --no-sync -C $ETCD_ADDR set --ttl $ETCD_TTL $SKYDNS_PATH "{\"host\": \"${SKYDNS_IP}\",\"port\": ${SKYDNS_PORT}}" 2>&1; do
+   while etcdctl -C $ETCD_ADDR set --ttl $ETCD_TTL $SKYDNS_PATH "{\"host\": \"${SKYDNS_IP}\",\"port\": ${SKYDNS_PORT}}" 2>&1; do
       #since one of our primary uses for this is HA services on host.domain names, randomize this a little
       xtra=$(echo $[ RANDOM % 10 ])
       sleep $(($ETCD_TTL/2)) # sleep etcd ttl - a little
