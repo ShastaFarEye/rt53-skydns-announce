@@ -105,7 +105,6 @@ trap on_exit INT TERM
 ###########
 # Configure RT53
 config_rt53 () {
-  . /etc/domain.env
   # we must have these set
   # we expect an ALIAS Record to be setup prior to use
   # we announce names that include the region, so to have your 
