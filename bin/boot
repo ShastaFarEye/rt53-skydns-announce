@@ -104,9 +104,7 @@ trap on_exit INT TERM
 
 ###########
 # Configure RT53
-   
-if [[ ! -n ${RT53_DOMAIN_ID} ]]
-then
+config_rt53 () {
   . /etc/domain.env
   # we must have these set
   # we expect an ALIAS Record to be setup prior to use
@@ -135,7 +133,8 @@ then
   echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] RT53 key info: ${RT53_INFO}"
   echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Port: ${SKYDNS_PORT}"
   
-fi
+}
+test -z "${RT53_DOMAIN_ID}" || config_rt53   
 
 # wait for etcd to be available
 until etcdctl -C $ETCD_ADDR ls >/dev/null 2>&1; do
