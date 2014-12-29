@@ -125,7 +125,7 @@ config_rt53 () {
   else
     RT53_RR="${RT53_NAME}.${RT53_ZONE}.${RT53_DOMAIN}"
   fi
-  RT53_PATH="/lbManager/rt53/${RT53_REGION}/${RT53_DOMAIN_ID}/${RT53_RR}/multiple/${RT53_PUBIP}"
+  RT53_PATH="/lbManager/route53/${RT53_REGION}/${RT53_DOMAIN_ID}/${RT53_RR}/multiple/${RT53_PUBIP}"
   echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Announcing ${RT53_PATH}..."
   echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] RT53 name: ${RT53_RR}"
   echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] RT53 Host: ${RT53_PUBIP}"
