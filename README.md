@@ -1,11 +1,14 @@
 Generic SkyDNS Service Announcement Dockerfile for CoreOS
 =======================================================
-Modified to take instance names in the form of 
-layer@app.instance.service
 
-and create A records in the form of
+This is considerably modified from the Joukou original. We've 
 
-instance.layer.app.domain
+* shortned the skydns names, 
+* omitted .local as the root zone
+* added a hook so that we can create RRs of host.domain with no zone
+* Added RT53 announcements if RT53_DOMAIN_ID is set. 
+
+
 
 
 

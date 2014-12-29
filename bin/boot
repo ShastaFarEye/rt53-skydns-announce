@@ -1,18 +1,4 @@
 #!/bin/bash
-# Copyright 2014 Joukou Ltd
-# Copyright 2014, OpDemand LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 # fail hard and fast even on pipelines
 set -eo pipefail
@@ -116,6 +102,41 @@ function on_exit() {
 }
 trap on_exit INT TERM
 
+###########
+# Configure RT53
+   
+if [[ ! -n ${RT53_DOMAIN_ID} ]]
+then
+  . /etc/domain.env
+  # we must have these set
+  # we expect an ALIAS Record to be setup prior to use
+  # we announce names that include the region, so to have your 
+  # the alias will need to be "primed" on first use 
+  # the last entry in an alas cannot be deleted, nor can the alias
+  # record be created with no resource to point it to 
+  # we also have a hook for RT53_ZONE="none" to skip it in the path
+  RT53_DOMAIN=${RT53_DOMAIN:-${DOMAIN}}
+  RT53_REGION=${RT53_REGION:-us-west-2}
+  RT53_ZONE=${RT53_ZONE:-${RT53_REGION}}
+  RT53_NAME=${RT53_NAME:-${SKYDNS_NAME}}
+  # set this if you're using NATted addresses
+  RT53_PUBIP=${RT53_PUBIP:-${COREOS_PUBLIC_IPV4}}
+  RT53_INFO=${RT53_INFO:-${COREOS_PRIVATE_IPV4}}
+  if [ "${RT53_ZONE}" = "none" ] 
+  then 
+    RT53_RR="${RT53_NAME}.${RT53_DOMAIN}"
+  else
+    RT53_RR="${RT53_NAME}.${RT53_ZONE}.${RT53_DOMAIN}"
+  fi
+  RT53_PATH="/lbManager/rt53/${RT53_REGION}/${RT53_DOMAIN_ID}/${RT53_RR}/multiple/${RT53_PUBIP}"
+  echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Announcing ${RT53_PATH}..."
+  echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] RT53 name: ${RT53_RR}"
+  echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] RT53 Host: ${RT53_PUBIP}"
+  echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] RT53 key info: ${RT53_INFO}"
+  echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Port: ${SKYDNS_PORT}"
+  
+fi
+
 # wait for etcd to be available
 until etcdctl -C $ETCD_ADDR ls >/dev/null 2>&1; do
   echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Waiting for etcd at $ETCD_ADDR..."
@@ -129,18 +150,36 @@ sleep $(($ETCD_TTL+1))
 echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Announcing ${SKYDNS_PATH}..."
 echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Host: ${SKYDNS_IP}"
 echo "$(date '+[%Y-%m-%d %H:%M:%S %Z]') [INFO] Port: ${SKYDNS_PORT}"
+
 if [ "$byip" = "true" ] ; then
    echo "Using ${SKYDNS_IP} by IP"
    
    while etcdctl -C $ETCD_ADDR set --ttl $ETCD_TTL $SKYDNS_PATH "{\"host\": \"${SKYDNS_IP}\",\"port\": ${SKYDNS_PORT}}" 2>&1; do
+      test -z ${RT53_DOMAIN_ID} || etcdctl -C $ETCD_ADDR set --ttl $ETCD_TTL $RT53_PATH "{\"host\": \"${RT53_INFO}\",\"port\": ${SKYDNS_PORT}}" 2>&1
       #since one of our primary uses for this is HA services on host.domain names, randomize this a little
       xtra=$(echo $[ RANDOM % 10 ])
       sleep $(($ETCD_TTL/2)) # sleep etcd ttl - a little
    done
 else echo "Using ${SKYDNS_IP} via container_name"
    while etcdctl -C $ETCD_ADDR set --ttl $ETCD_TTL $SKYDNS_PATH "{\"host\": ${SKYDNS_IP},\"port\": ${SKYDNS_PORT}}" 2>&1; do
+      test -z ${RT53_DOMAIN_ID} || etcdctl -C $ETCD_ADDR set --ttl $ETCD_TTL $RT53_PATH "{\"host\": \"${RT53_INFO}\",\"port\": ${SKYDNS_PORT}}" 2>&1
      sleep $(($ETCD_TTL/2)) # sleep for half the etcd TTL
    done
 fi
 # if the loop quits, something went wrong
 exit 1
+# Copyright 2014 Joukou Ltd
+# Copyright 2014, OpDemand LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
