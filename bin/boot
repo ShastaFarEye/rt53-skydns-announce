@@ -33,14 +33,17 @@ fi
 export SKYDNS_DOMAIN_PATH=${SKYDNS_DOMAIN_PATH:-mazaclub}
 export SKYDNS_ZONE=${SKYDNS_ZONE:-${SKYZONE}}
 export SKYDNS_ENVIRONMENT=${SKYDNS_ENVIRONMENT:-production}
-if [ -z ${SKYDNS_INSTANCE} ]
+echo "SKYDNS_INSTANCE=${SKYDNS_INSTANCE}"
+if [[ -z ${SKYDNS_INSTANCE} ]]
 then
    instance=$(echo ${SKYDNS_ZONE}|awk -F"." '{print $NF}')
    if [ "${instance}" != ""  ]
    then
-    #were getting the instance id from the second part of the service instance %i
-    export SKYDNS_INSTANCE="${instance}"
-    export SKYDNS_ZONE=$(echo "${SKYDNS_ZONE}"|awk -F"." '{print $1}')
+     echo "SKYDNS_INSTANCE found in SKYDNS_ZONE ${SKYDNS_ZONE} setting to ${instance}"
+     #were getting the instance id from the second part of the service instance %i
+     export SKYDNS_INSTANCE="${instance}"
+     export SKYDNS_ZONE=$(echo "${SKYDNS_ZONE}"|awk -F"." '{print $1}')
+     echo "SKYDNS_ZONE set to ${SKYDNS_ZONE} - SKYDNS_INSTANCE set to ${SKYDNS_INSTANCE}"
    fi
 fi   
 if [[ -n $SKYDNS_IFACE ]]
