@@ -34,15 +34,24 @@ export SKYDNS_DOMAIN_PATH=${SKYDNS_DOMAIN_PATH:-mazaclub}
 export SKYDNS_ZONE=${SKYDNS_ZONE:-${SKYZONE}}
 export SKYDNS_ENVIRONMENT=${SKYDNS_ENVIRONMENT:-production}
 echo "SKYDNS_INSTANCE=${SKYDNS_INSTANCE}"
+# if we don't set a SKYDNS_INSTANCE in the unit
+# see if we've got a numerically instantiated unit
+# units will be in layer@1.app.service 
+# DNS will be /skydns/$domain/app/layer/instance
+# improvement would be to get a SYSTEMD_INSTANCE
+# as well as SKYDNS_INSTANCE so we can see both from 
+# etcd or DNS
 if [[ -z ${SKYDNS_INSTANCE} ]]
 then
-   instance=$(echo ${SKYDNS_ZONE}|awk -F"." '{print $1}')
-   if [ "${instance}" != ""  ]
-   then
+   # make sure we really have 2 fields for zone and instance
+   if [ $(echo ${SKYDNS_ZONE}|awk -F"." '{print NF}') -gt 1 ]
+   then 
      echo "SKYDNS_INSTANCE found in SKYDNS_ZONE ${SKYDNS_ZONE} setting to ${instance}"
+     instance="$(echo ${SKYDNS_ZONE}|awk -F"." '{print $1}')"
+     zone="$(echo ${SKYDNS_ZONE}|awk -F"." '{print $NF}')"
      #were getting the instance id from the second part of the service instance %i
      export SKYDNS_INSTANCE="${instance}"
-     export SKYDNS_ZONE=$(echo "${SKYDNS_ZONE}"|awk -F"." '{print $NF}')
+     export SKYDNS_ZONE="${zone}"
      echo "SKYDNS_ZONE set to ${SKYDNS_ZONE} - SKYDNS_INSTANCE set to ${SKYDNS_INSTANCE}"
    fi
 fi   
