@@ -33,7 +33,7 @@ fi
 export SKYDNS_DOMAIN_PATH=${SKYDNS_DOMAIN_PATH:-mazaclub}
 export SKYDNS_ZONE=${SKYDNS_ZONE:-${SKYZONE}}
 export SKYDNS_ENVIRONMENT=${SKYDNS_ENVIRONMENT:-production}
-if [ ! -n ${SKYDNS_INSTANCE} ]
+if [ -z ${SKYDNS_INSTANCE} ]
 then
    instance=$(echo ${SKYDNS_ZONE}|awk -F"." '{print $NF}')
    if [ "${instance}" != ""  ]
