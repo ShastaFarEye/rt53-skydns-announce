@@ -36,13 +36,13 @@ export SKYDNS_ENVIRONMENT=${SKYDNS_ENVIRONMENT:-production}
 echo "SKYDNS_INSTANCE=${SKYDNS_INSTANCE}"
 if [[ -z ${SKYDNS_INSTANCE} ]]
 then
-   instance=$(echo ${SKYDNS_ZONE}|awk -F"." '{print $NF}')
+   instance=$(echo ${SKYDNS_ZONE}|awk -F"." '{print $1}')
    if [ "${instance}" != ""  ]
    then
      echo "SKYDNS_INSTANCE found in SKYDNS_ZONE ${SKYDNS_ZONE} setting to ${instance}"
      #were getting the instance id from the second part of the service instance %i
      export SKYDNS_INSTANCE="${instance}"
-     export SKYDNS_ZONE=$(echo "${SKYDNS_ZONE}"|awk -F"." '{print $1}')
+     export SKYDNS_ZONE=$(echo "${SKYDNS_ZONE}"|awk -F"." '{print $NF}')
      echo "SKYDNS_ZONE set to ${SKYDNS_ZONE} - SKYDNS_INSTANCE set to ${SKYDNS_INSTANCE}"
    fi
 fi   
